@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post - SkyBlogging</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">SkyBlogging</a>
+            <div class="nav-links" id="nav-links"></div>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <main class="main-content post-page">
+        <div th:if="${error}" class="error-container">
+            <h2>Post not found</h2>
+            <p>The post you're looking for doesn't exist or has been deleted.</p>
+            <a href="/" class="btn btn-primary">Back to Home</a>
+        </div>
+
+        <article id="post-container" class="post-content" th:if="${post}">
+            <header class="post-header">
+                <h1 class="post-title" th:text="${post.title}"></h1>
+                <div class="post-author-meta">
+                    <span th:text="'By ' + ${post.author.name}"></span>
+                    <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}"></span>
+                </div>
+            </header>
+            <div class="post-body" th:text="${post.content}"></div>
+        </article>
+
+        <section class="comments-section" th:if="${post}">
+            <h3>Comments</h3>
+            
+            <form th:action="@{'/post/' + ${post.id} + '/comment'}" method="post" class="comment-form">
+                <textarea name="content" class="comment-input" placeholder="Write a comment..." required></textarea>
+                <button type="submit" class="btn btn-primary mt-1">Post Comment</button>
+            </form>
+            
+            <div class="comments-list">
+                <div th:if="${comments.isEmpty()}" class="no-comments">
+                    <p>No comments yet. Be the first to comment!</p>
+                </div>
+                <div th:each="comment : ${comments}" class="comment">
+                    <div class="comment-meta">
+                        <strong th:text="${comment.user.name}"></strong>
+                        <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy')}"></span>
+                    </div>
+                    <div class="comment-content" th:text="${comment.content}"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/auth.js}"></script>
+    <script th:src="@{/js/post.js}"></script>
+</body>
+</html>
